@@ -1,0 +1,31 @@
+spring:
+  datasource:
+    main:
+      type: com.zaxxer.hikari.HikariDataSource
+      jdbc-url: jdbc:mariadb://classmate-dev.cnjqhbbgkaab.ap-northeast-2.rds.amazonaws.com:3306/classmate
+      username: classmate
+      password: classmate-dev
+      driver-class-name: org.mariadb.jdbc.Driver
+      connectionTimeout: 3000
+      validationTimeout: 1000
+      maximum-pool-size: 10
+      minimum-idle: 10
+    readonly:
+      type: com.zaxxer.hikari.HikariDataSource
+      jdbc-url: jdbc:mariadb://classmate-dev.cnjqhbbgkaab.ap-northeast-2.rds.amazonaws.com:3306/classmate
+      username: classmate
+      password: classmate-dev
+      driver-class-name: org.mariadb.jdbc.Driver
+      connectionTimeout: 3000
+      validationTimeout: 1000
+      maximum-pool-size: 10
+      minimum-idle: 10
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+
+logging:
+  config: classpath:logback-develop.xml

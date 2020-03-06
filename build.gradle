@@ -1,0 +1,90 @@
+plugins {
+    id "org.springframework.boot" version "2.2.4.RELEASE"
+    id "io.spring.dependency-management" version "1.0.8.RELEASE"
+    id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
+    id 'com.google.cloud.tools.jib' version '1.8.0'
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'groovy'
+
+group = 'net.class101'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    implementation 'commons-io:commons-io:2.6'
+    implementation 'org.apache.commons:commons-lang3:3.9'
+    implementation 'org.apache.commons:commons-text:1.8'
+    implementation 'org.apache.httpcomponents:httpclient:4.5.11'
+    implementation 'com.google.guava:guava:28.2-jre'
+
+    // Logging
+    implementation 'com.github.danielwegener:logback-kafka-appender:0.1.0'
+    implementation "org.springframework.cloud:spring-cloud-starter-sleuth:2.1.4.RELEASE"
+    implementation "com.github.maricn:logback-slack-appender:1.4.0"
+
+    // QueryDSL
+    implementation 'com.querydsl:querydsl-jpa'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    compile("org.modelmapper:modelmapper:1.1.0")
+
+    // DB
+    compile group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '2.4.0'
+    compile group: 'com.zaxxer', name: 'HikariCP', version: '3.3.0'
+    compile("com.h2database:h2")
+    runtimeOnly 'mysql:mysql-connector-java'
+
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+
+    compile('org.springframework.boot:spring-boot-starter-batch') // spring boot batch
+    compile('org.springframework.batch:spring-batch-test') // spring batch test
+
+    // Spock
+    testCompile 'org.spockframework:spock-core:1.2-groovy-2.5'
+    testCompile 'org.spockframework:spock-spring:1.2-groovy-2.5'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+def querydslDir = "$buildDir/generated/querydsl"
+
+querydsl {
+    library = "com.querydsl:querydsl-apt"
+    jpa = true
+    querydslSourcesDir = querydslDir
+}
+
+sourceSets {
+    main.java.srcDir querydslDir
+}
+
+configurations {
+    querydsl.extendsFrom compileClasspath
+}
+
+compileQuerydsl {
+    options.annotationProcessorPath = configurations.querydsl
+}

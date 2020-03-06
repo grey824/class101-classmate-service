@@ -1,0 +1,15 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: classmate
+  jpa:
+    open-in-view: false
+
+class101:
+  restapi:
+    read-timeout: 10_000
+    connection-timeout: 30_000
+    total-connection: 200
+    max-connection-per-route: 10

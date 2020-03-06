@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="10 seconds">
+    <appender name="SERVICE-V1-LOG-KAFKA" class="com.github.danielwegener.logback.kafka.KafkaAppender">
+        <encoder class="com.github.danielwegener.logback.kafka.encoding.LayoutKafkaMessageEncoder">
+            <layout class="net.class101.classmate.util.EscapedPatternLayout">
+                <pattern>
+                    {
+                    "@timestamp":"%d{"yyyy-MM-dd'T'HH:mm:ss.SSSZ"}",
+                    "service":"classmate-inbox",
+                    "traceId": "%X{X-B3-TraceId:-}",
+                    "spanId": "%X{X-B3-SpanId:-}",
+                    "phase":"production",
+                    "level":"%level",
+                    "thread":"%thread",
+                    "src":"%logger{0}.%M\(%L\)",
+                    "message":"%msg",
+                    "exception": "%ex{2}",
+                    "host": "%contextName"
+                    }
+                </pattern>
+            </layout>
+        </encoder>
+        <topic>service-log-v1</topic>
+        <keyingStrategy class="com.github.danielwegener.logback.kafka.keying.RoundRobinKeyingStrategy" />
+        <deliveryStrategy class="com.github.danielwegener.logback.kafka.delivery.AsynchronousDeliveryStrategy" />
+        <producerConfig>bootstrap.servers=kafka1.class101.bz:9092,kafka2.class101.bz:9092,kafka3.class101.bz:9092</producerConfig>
+        <producerConfig>compression.type=snappy</producerConfig>
+        <producerConfig>batch.size=327680</producerConfig>
+    </appender>
+
+    <logger name="org.springframework" level="ERROR">
+        <appender-ref ref="SERVICE-V1-LOG-KAFKA"/>
+    </logger>
+
+    <logger name="org.springframework.boot" level="ERROR">
+        <appender-ref ref="SERVICE-V1-LOG-KAFKA"/>
+    </logger>
+
+    <logger name="org.hibernate" level="ERROR">
+        <appender-ref ref="SERVICE-V1-LOG-KAFKA"/>
+    </logger>
+
+    <logger name="net.class101.classmate" level="INFO">
+        <appender-ref ref="SERVICE-V1-LOG-KAFKA"/>
+    </logger>
+
+    <root level="INFO">
+        <appender-ref ref="SERVICE-V1-LOG-KAFKA"/>
+    </root>
+</configuration>
